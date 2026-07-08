@@ -10,18 +10,10 @@
 <title>飲酒管理</title>
 <style>
 :root {
-  --bg: #fdf3e0; --card: #ffffff; --ink: #3d2c1e; --sub: #8a7360; --muted: #b8a893;
-  --line: #f0e2cc; --green: #15997a; --green-bg: #d9f4e8; --amber: #d97706; --amber-bg: #fdeed3;
+  --bg: #f2f2ef; --card: #ffffff; --ink: #33302b; --sub: #7c766c; --muted: #aaa49a;
+  --line: #e4e2dc; --green: #15997a; --green-bg: #d9f4e8; --amber: #d97706; --amber-bg: #fdeed3;
   --red: #e05252; --red-bg: #fde3e3; --blue: #3b82d6; --accent: #f59e0b;
-  --shadow: 0 2px 10px rgba(160, 110, 40, .10);
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #231c12; --card: #2f281c; --ink: #f3e9d8; --sub: #b6a68d; --muted: #7d7059;
-    --line: #43392a; --green: #4ecfa5; --green-bg: #1a4436; --amber: #f5a742; --amber-bg: #45340f;
-    --red: #f28b8b; --red-bg: #4b2020; --blue: #7db3f0; --accent: #f5a742;
-    --shadow: 0 2px 10px rgba(0, 0, 0, .35);
-  }
+  --shadow: 0 2px 10px rgba(120, 110, 90, .12);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
@@ -203,11 +195,6 @@ const btnColors = [
   { bg: '#fff1bf', fg: '#7a5c00' }, { bg: '#ffe3c2', fg: '#8a4b00' }, { bg: '#ffd9d9', fg: '#9c2f2f' },
   { bg: '#e9ddff', fg: '#5b3b9e' }, { bg: '#cdf0e2', fg: '#0b6b52' }, { bg: '#d6e9ff', fg: '#1b5fa8' }
 ];
-const btnColorsDark = [
-  { bg: '#4d3d09', fg: '#ffe17a' }, { bg: '#4f3210', fg: '#ffc98a' }, { bg: '#4d2323', fg: '#ffb3b3' },
-  { bg: '#3a2b57', fg: '#d4bfff' }, { bg: '#1a4436', fg: '#8ce8c4' }, { bg: '#1e3a57', fg: '#a8cdf5' }
-];
-
 function emojiFor(name) {
   if (/ビール|生|発泡|エール/.test(name)) return '🍺';
   if (/ワイン|赤|白/.test(name)) return '🍷';
@@ -338,7 +325,6 @@ function importData(input) {
 }
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
-function isDark() { return matchMedia('(prefers-color-scheme: dark)').matches; }
 
 function render() {
   const now = new Date(), k = todayKey();
@@ -376,7 +362,7 @@ function render() {
 
   const btns = document.getElementById('drinkBtns');
   btns.innerHTML = '';
-  const pal = isDark() ? btnColorsDark : btnColors;
+  const pal = btnColors;
   settings.drinks.forEach((d, i) => {
     const c = pal[i % pal.length];
     const b = document.createElement('button');
@@ -487,7 +473,6 @@ function render() {
     ml.appendChild(div);
   });
 
-  document.querySelector('meta[name=theme-color]').content = isDark() ? '#231c12' : '#f59e0b';
 }
 
 render();
