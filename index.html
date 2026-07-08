@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f7f6f2">
+<title>飲酒管理</title>
+<style>
+:root {
+  --bg: #f7f6f2; --card: #ffffff; --ink: #1f1f1d; --sub: #6f6e68; --muted: #a5a49b;
+  --line: #e4e2da; --green: #1d9e75; --green-bg: #e1f5ee; --amber: #ba7517; --amber-bg: #faeeda;
+  --red: #cc3b3a; --red-bg: #fcebeb; --blue: #378add; --accent: #185fa5;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191917; --card: #242422; --ink: #eceae4; --sub: #a3a29a; --muted: #6f6e68;
+    --line: #3a3936; --green: #5dcaa5; --green-bg: #0f3d30; --amber: #ef9f27; --amber-bg: #3d2c0e;
+    --red: #f09595; --red-bg: #45191a; --blue: #85b7eb; --accent: #b5d4f4;
+  }
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  font-size: 15px; line-height: 1.6;
+  padding: max(12px, env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom));
+  max-width: 460px; margin: 0 auto;
+}
+h1 { font-size: 18px; font-weight: 600; }
+.row { display: flex; justify-content: space-between; align-items: baseline; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
+.label { font-size: 12px; color: var(--sub); }
+.big { font-size: 30px; font-weight: 600; line-height: 1.2; }
+.unit { font-size: 13px; color: var(--sub); font-weight: 400; }
+.bar { height: 10px; background: var(--bg); border-radius: 5px; margin-top: 8px; overflow: hidden; }
+.bar > div { height: 100%; border-radius: 5px; transition: width .3s; }
+.msg { font-size: 12.5px; margin-top: 6px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+button { font-family: inherit; font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; cursor: pointer; }
+button:active { transform: scale(.97); }
+.drinkbtn { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.drinkbtn b { font-size: 13.5px; font-weight: 600; }
+.drinkbtn span { font-size: 11px; color: var(--sub); }
+.restbtn { width: 100%; margin-top: 10px; padding: 12px; font-size: 14px; color: var(--green); background: var(--green-bg); border: none; border-radius: 10px; font-weight: 600; }
+.restbtn.off { color: var(--sub); background: var(--bg); font-weight: 400; }
+.log { margin-top: 8px; }
+.log .item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.log .item small { color: var(--muted); margin-right: 8px; }
+.log .item .g { color: var(--sub); font-size: 12.5px; }
+.del { border: none; background: none; color: var(--muted); font-size: 16px; padding: 4px 8px; }
+.chart { display: flex; align-items: flex-end; gap: 7px; height: 110px; margin-top: 12px; }
+.chart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 3px; }
+.chart .col .v { font-size: 10px; color: var(--muted); }
+.chart .col .b { width: 100%; border-radius: 4px 4px 0 0; background: var(--blue); min-height: 2px; }
+.days { display: flex; gap: 7px; margin-top: 4px; }
+.days div { flex: 1; text-align: center; font-size: 11px; color: var(--muted); }
+.days .today { color: var(--ink); font-weight: 600; }
+.target-line { position: relative; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.stat { background: var(--bg); border-radius: 10px; padding: 10px 8px; }
+.stat .label { font-size: 11px; }
+.stat b { font-size: 17px; font-weight: 600; }
+details { margin-top: 14px; }
+summary { font-size: 13px; color: var(--sub); cursor: pointer; padding: 6px 0; }
+input, select { font-family: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; }
+.form-row { display: flex; gap: 6px; margin-top: 8px; }
+.form-row label { flex: 1; font-size: 11px; color: var(--sub); }
+.form-row input { margin-top: 2px; }
+.primary { background: var(--ink); color: var(--card); border: none; font-weight: 600; padding: 11px; width: 100%; margin-top: 10px; border-radius: 10px; }
+.menu-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+.menu-item span { color: var(--sub); font-size: 12px; }
+.hidden { display: none; }
+.footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="row">
+  <h1 id="dateTitle"></h1>
+  <span class="label" id="streak"></span>
+</div>
+
+<div class="card">
+  <div class="label">今日の純アルコール量</div>
+  <div><span class="big" id="todayG">0</span><span class="unit"> g ／ 目標 <span id="targetG"></span>g</span></div>
+  <div class="bar"><div id="barFill" style="width:0%"></div></div>
+  <div class="msg" id="todayMsg"></div>
+</div>
+
+<div class="card">
+  <div class="label">ワンタップ記録</div>
+  <div class="grid" id="drinkBtns"></div>
+  <div id="customForm" class="hidden">
+    <div class="form-row">
+      <label>名前<input id="cName" placeholder="例：梅酒ロック"></label>
+      <label>量(ml)<input id="cMl" type="number" inputmode="numeric" placeholder="90"></label>
+    </div>
+    <div class="form-row">
+      <label>度数(%)<input id="cAbv" type="number" inputmode="decimal" placeholder="12"></label>
+      <label>金額(円)<input id="cPrice" type="number" inputmode="numeric" placeholder="200"></label>
+    </div>
+    <button class="primary" onclick="addCustom()">記録する</button>
+  </div>
+  <button class="restbtn off" id="restBtn" onclick="toggleRest()"></button>
+  <div class="log" id="todayLog"></div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="label">直近7日間（g）</div>
+    <div class="label" id="weekRest"></div>
+  </div>
+  <div class="chart" id="chart"></div>
+  <div class="days" id="chartDays"></div>
+</div>
+
+<div class="card">
+  <div class="label" id="monthTitle"></div>
+  <div class="stats">
+    <div class="stat"><div class="label">休肝日</div><b id="mRest">0</b><span class="unit">日</span></div>
+    <div class="stat"><div class="label">酒代</div><b id="mCost">¥0</b></div>
+    <div class="stat"><div class="label">1日平均</div><b id="mAvg">0</b><span class="unit">g</span></div>
+  </div>
+</div>
+
+<details>
+  <summary>設定・メニュー編集</summary>
+  <div class="card">
+    <div class="form-row">
+      <label>1日の目標（純アルコールg）<input id="sTarget" type="number" inputmode="numeric"></label>
+      <label>週の休肝日目標（日）<input id="sRest" type="number" inputmode="numeric"></label>
+    </div>
+    <button class="primary" onclick="saveSettings()">設定を保存</button>
+
+    <div class="label" style="margin-top:16px">ワンタップメニュー</div>
+    <div id="menuList"></div>
+    <div class="form-row">
+      <label>名前<input id="mName" placeholder="例：ビール中瓶"></label>
+      <label>量(ml)<input id="mMl" type="number" inputmode="numeric"></label>
+    </div>
+    <div class="form-row">
+      <label>度数(%)<input id="mAbv" type="number" inputmode="decimal"></label>
+      <label>金額(円)<input id="mPrice" type="number" inputmode="numeric"></label>
+    </div>
+    <button class="primary" onclick="addMenu()">メニューに追加</button>
+
+    <div class="label" style="margin-top:16px">データ</div>
+    <div class="form-row">
+      <button style="flex:1" onclick="exportData()">バックアップ保存</button>
+      <button style="flex:1" onclick="document.getElementById('importFile').click()">復元</button>
+      <input type="file" id="importFile" accept=".json" class="hidden" onchange="importData(this)">
+    </div>
+  </div>
+</details>
+
+<div class="footer">純アルコール量 = 量(ml) × 度数(%) ÷ 100 × 0.8<br>厚労省の目安：1日20g程度・週2日以上の休肝日</div>
+
+<script>
+const LS_LOG = 'inshu_log', LS_SET = 'inshu_settings';
+
+const defaultSettings = {
+  targetG: 20,
+  restTarget: 2,
+  drinks: [
+    { name: 'ビール中瓶', ml: 500, abv: 5, price: 350 },
+    { name: 'ビール350缶', ml: 350, abv: 5, price: 220 },
+    { name: 'ハイボール缶', ml: 350, abv: 7, price: 180 },
+    { name: '日本酒1合', ml: 180, abv: 15, price: 300 },
+    { name: 'ワイングラス', ml: 120, abv: 12, price: 250 },
+    { name: '焼酎ロック', ml: 90, abv: 25, price: 150 }
+  ]
+};
+
+let settings = load(LS_SET) || defaultSettings;
+let log = load(LS_LOG) || {};
+
+function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function save() {
+  localStorage.setItem(LS_LOG, JSON.stringify(log));
+  localStorage.setItem(LS_SET, JSON.stringify(settings));
+}
+
+function dateKey(d) {
+  const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + dd;
+}
+function todayKey() { return dateKey(new Date()); }
+function pureG(ml, abv) { return Math.round(ml * abv / 100 * 0.8 * 10) / 10; }
+function day(k) { return log[k] || { items: [], rest: false }; }
+function dayG(k) { return Math.round(day(k).items.reduce((s, i) => s + i.g, 0) * 10) / 10; }
+
+function addItem(name, ml, abv, price) {
+  const k = todayKey();
+  if (!log[k]) log[k] = { items: [], rest: false };
+  log[k].rest = false;
+  const t = new Date();
+  log[k].items.push({
+    id: Date.now(), name: name, g: pureG(ml, abv), price: Number(price) || 0,
+    time: String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0')
+  });
+  save(); render();
+}
+
+function addCustom() {
+  const name = document.getElementById('cName').value.trim() || 'その他';
+  const ml = Number(document.getElementById('cMl').value);
+  const abv = Number(document.getElementById('cAbv').value);
+  const price = Number(document.getElementById('cPrice').value) || 0;
+  if (!ml || !abv) { alert('量と度数を入力してください'); return; }
+  addItem(name, ml, abv, price);
+  ['cName', 'cMl', 'cAbv', 'cPrice'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('customForm').classList.add('hidden');
+}
+
+function removeItem(id) {
+  const k = todayKey();
+  if (!log[k]) return;
+  log[k].items = log[k].items.filter(i => i.id !== id);
+  save(); render();
+}
+
+function toggleRest() {
+  const k = todayKey();
+  if (!log[k]) log[k] = { items: [], rest: false };
+  if (log[k].items.length > 0) { alert('今日はすでに記録があります。休肝日にするには記録を削除してください。'); return; }
+  log[k].rest = !log[k].rest;
+  save(); render();
+}
+
+function saveSettings() {
+  const t = Number(document.getElementById('sTarget').value);
+  const r = Number(document.getElementById('sRest').value);
+  if (t > 0) settings.targetG = t;
+  if (r >= 0) settings.restTarget = r;
+  save(); render();
+}
+
+function addMenu() {
+  const name = document.getElementById('mName').value.trim();
+  const ml = Number(document.getElementById('mMl').value);
+  const abv = Number(document.getElementById('mAbv').value);
+  const price = Number(document.getElementById('mPrice').value) || 0;
+  if (!name || !ml || !abv) { alert('名前・量・度数を入力してください'); return; }
+  settings.drinks.push({ name, ml, abv, price });
+  ['mName', 'mMl', 'mAbv', 'mPrice'].forEach(id => document.getElementById(id).value = '');
+  save(); render();
+}
+
+function removeMenu(i) {
+  settings.drinks.splice(i, 1);
+  save(); render();
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify({ log, settings }, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '飲酒管理バックアップ_' + todayKey() + '.json';
+  a.click();
+}
+
+function importData(input) {
+  const f = input.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const d = JSON.parse(r.result);
+      if (d.log && d.settings) {
+        log = d.log; settings = d.settings; save(); render();
+        alert('復元しました');
+      } else { alert('バックアップファイルの形式が違います'); }
+    } catch (e) { alert('読み込めませんでした'); }
+  };
+  r.readAsText(f);
+  input.value = '';
+}
+
+function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+function render() {
+  const now = new Date(), k = todayKey();
+  const youbi = ['日', '月', '火', '水', '木', '金', '土'];
+  document.getElementById('dateTitle').textContent = (now.getMonth() + 1) + '月' + now.getDate() + '日（' + youbi[now.getDay()] + '）';
+
+  const g = dayG(k), target = settings.targetG;
+  document.getElementById('todayG').textContent = g;
+  document.getElementById('targetG').textContent = target;
+  const pct = Math.min(100, g / target * 100);
+  const fill = document.getElementById('barFill');
+  fill.style.width = pct + '%';
+  const msg = document.getElementById('todayMsg');
+  if (day(k).rest) {
+    fill.style.background = 'var(--green)'; fill.style.width = '100%';
+    msg.textContent = '今日は休肝日です'; msg.style.color = 'var(--green)';
+  } else if (g === 0) {
+    msg.textContent = 'まだ記録がありません'; msg.style.color = 'var(--muted)';
+  } else if (g <= target) {
+    fill.style.background = 'var(--green)';
+    msg.textContent = '目標の範囲内です（残り ' + Math.round((target - g) * 10) / 10 + 'g）'; msg.style.color = 'var(--green)';
+  } else if (g <= target * 2) {
+    fill.style.background = 'var(--amber)';
+    msg.textContent = '目標を ' + Math.round((g - target) * 10) / 10 + 'g 超えています'; msg.style.color = 'var(--amber)';
+  } else {
+    fill.style.background = 'var(--red)';
+    msg.textContent = '飲みすぎです（目標の' + Math.round(g / target * 10) / 10 + '倍）'; msg.style.color = 'var(--red)';
+  }
+
+  const btns = document.getElementById('drinkBtns');
+  btns.innerHTML = '';
+  settings.drinks.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'drinkbtn';
+    b.innerHTML = '<b>' + esc(d.name) + '</b><span>' + pureG(d.ml, d.abv) + 'g</span>';
+    b.onclick = () => addItem(d.name, d.ml, d.abv, d.price);
+    btns.appendChild(b);
+  });
+  const other = document.createElement('button');
+  other.className = 'drinkbtn';
+  other.innerHTML = '<b>＋ その他</b><span>手入力</span>';
+  other.onclick = () => document.getElementById('customForm').classList.toggle('hidden');
+  btns.appendChild(other);
+
+  const restBtn = document.getElementById('restBtn');
+  if (day(k).rest) { restBtn.textContent = '✓ 今日は休肝日'; restBtn.className = 'restbtn'; }
+  else { restBtn.textContent = '今日は飲まない（休肝日にする）'; restBtn.className = 'restbtn off'; }
+
+  const tl = document.getElementById('todayLog');
+  tl.innerHTML = '';
+  day(k).items.forEach(i => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = '<span><small>' + i.time + '</small>' + esc(i.name) + ' <span class="g">' + i.g + 'g</span></span>';
+    const del = document.createElement('button');
+    del.className = 'del'; del.textContent = '×';
+    del.onclick = () => { if (confirm(i.name + ' を削除しますか？')) removeItem(i.id); };
+    div.appendChild(del);
+    tl.appendChild(div);
+  });
+
+  const chart = document.getElementById('chart'), daysEl = document.getElementById('chartDays');
+  chart.innerHTML = ''; daysEl.innerHTML = '';
+  let weekRest = 0, maxG = target * 2;
+  const week = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const kk = dateKey(d);
+    week.push({ d, g: dayG(kk), rest: day(kk).rest });
+  }
+  week.forEach(w => { if (w.g > maxG) maxG = w.g; });
+  week.forEach((w, idx) => {
+    const col = document.createElement('div'); col.className = 'col';
+    if (w.rest) {
+      col.innerHTML = '<div class="v" style="color:var(--green)">休</div><div class="b" style="height:6px;background:var(--green)"></div>';
+      weekRest++;
+    } else if (w.g === 0) {
+      col.innerHTML = '<div class="v">–</div><div class="b" style="height:2px;background:var(--line)"></div>';
+    } else {
+      const h = Math.max(4, w.g / maxG * 100);
+      const color = w.g <= target ? 'var(--blue)' : (w.g <= target * 2 ? 'var(--amber)' : 'var(--red)');
+      col.innerHTML = '<div class="v">' + w.g + '</div><div class="b" style="height:' + h + '%;background:' + color + '"></div>';
+    }
+    chart.appendChild(col);
+    const dl = document.createElement('div');
+    dl.textContent = youbi[w.d.getDay()];
+    if (idx === 6) dl.className = 'today';
+    daysEl.appendChild(dl);
+  });
+  document.getElementById('weekRest').textContent = '休肝日 ' + weekRest + '/' + settings.restTarget + '日';
+
+  const y = now.getFullYear(), m = now.getMonth();
+  document.getElementById('monthTitle').textContent = (m + 1) + '月のまとめ';
+  let mRest = 0, mCost = 0, mG = 0, mDays = 0;
+  Object.keys(log).forEach(kk => {
+    const p = kk.split('-');
+    if (Number(p[0]) === y && Number(p[1]) === m + 1) {
+      const dd = log[kk];
+      if (dd.rest) mRest++;
+      dd.items.forEach(i => { mCost += i.price; mG += i.g; });
+      if (dd.rest || dd.items.length) mDays++;
+    }
+  });
+  document.getElementById('mRest').textContent = mRest;
+  document.getElementById('mCost').textContent = '¥' + mCost.toLocaleString();
+  document.getElementById('mAvg').textContent = mDays ? Math.round(mG / mDays * 10) / 10 : 0;
+
+  let streak = 0;
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const kk = dateKey(d), dd = day(kk);
+    if (dd.items.length === 0 || dayG(kk) <= target) {
+      if (dd.items.length === 0 && !dd.rest && i > 0) break;
+      streak++;
+    } else break;
+  }
+  document.getElementById('streak').textContent = streak >= 2 ? '目標達成 ' + streak + '日連続' : '';
+
+  document.getElementById('sTarget').value = settings.targetG;
+  document.getElementById('sRest').value = settings.restTarget;
+  const ml = document.getElementById('menuList');
+  ml.innerHTML = '';
+  settings.drinks.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.innerHTML = '<span style="color:var(--ink)">' + esc(d.name) + '</span><span>' + d.ml + 'ml・' + d.abv + '%・¥' + d.price + '（' + pureG(d.ml, d.abv) + 'g）</span>';
+    const del = document.createElement('button');
+    del.className = 'del'; del.textContent = '×';
+    del.onclick = () => { if (confirm(d.name + ' をメニューから削除しますか？')) removeMenu(i); };
+    div.appendChild(del);
+    ml.appendChild(div);
+  });
+
+  document.querySelector('meta[name=theme-color]').content =
+    matchMedia('(prefers-color-scheme: dark)').matches ? '#191917' : '#f7f6f2';
+}
+
+render();
+setInterval(() => { render(); }, 60000);
+</script>
+</body>
+</html>
