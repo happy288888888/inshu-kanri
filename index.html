@@ -6,19 +6,21 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#f7f6f2">
+<meta name="theme-color" content="#f59e0b">
 <title>飲酒管理</title>
 <style>
 :root {
-  --bg: #f7f6f2; --card: #ffffff; --ink: #1f1f1d; --sub: #6f6e68; --muted: #a5a49b;
-  --line: #e4e2da; --green: #1d9e75; --green-bg: #e1f5ee; --amber: #ba7517; --amber-bg: #faeeda;
-  --red: #cc3b3a; --red-bg: #fcebeb; --blue: #378add; --accent: #185fa5;
+  --bg: #fdf3e0; --card: #ffffff; --ink: #3d2c1e; --sub: #8a7360; --muted: #b8a893;
+  --line: #f0e2cc; --green: #15997a; --green-bg: #d9f4e8; --amber: #d97706; --amber-bg: #fdeed3;
+  --red: #e05252; --red-bg: #fde3e3; --blue: #3b82d6; --accent: #f59e0b;
+  --shadow: 0 2px 10px rgba(160, 110, 40, .10);
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #191917; --card: #242422; --ink: #eceae4; --sub: #a3a29a; --muted: #6f6e68;
-    --line: #3a3936; --green: #5dcaa5; --green-bg: #0f3d30; --amber: #ef9f27; --amber-bg: #3d2c0e;
-    --red: #f09595; --red-bg: #45191a; --blue: #85b7eb; --accent: #b5d4f4;
+    --bg: #231c12; --card: #2f281c; --ink: #f3e9d8; --sub: #b6a68d; --muted: #7d7059;
+    --line: #43392a; --green: #4ecfa5; --green-bg: #1a4436; --amber: #f5a742; --amber-bg: #45340f;
+    --red: #f28b8b; --red-bg: #4b2020; --blue: #7db3f0; --accent: #f5a742;
+    --shadow: 0 2px 10px rgba(0, 0, 0, .35);
   }
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -26,62 +28,85 @@ body {
   background: var(--bg); color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
   font-size: 15px; line-height: 1.6;
-  padding: max(12px, env(safe-area-inset-top)) 14px calc(30px + env(safe-area-inset-bottom));
+  padding: 0 14px calc(30px + env(safe-area-inset-bottom));
   max-width: 460px; margin: 0 auto;
 }
-h1 { font-size: 18px; font-weight: 600; }
+.appbar {
+  background: linear-gradient(120deg, #f59e0b, #f97350);
+  margin: 0 -14px; padding: calc(14px + env(safe-area-inset-top)) 20px 14px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-radius: 0 0 22px 22px; color: #fff;
+}
+.appbar h1 { font-size: 19px; font-weight: 700; letter-spacing: .02em; }
+.appbar .date { font-size: 14px; font-weight: 600; opacity: .95; }
+.streak {
+  display: inline-block; margin-top: 10px; font-size: 12.5px; font-weight: 600;
+  background: var(--amber-bg); color: var(--amber); border-radius: 999px; padding: 4px 12px;
+}
+.card { background: var(--card); border-radius: 18px; padding: 16px; margin-top: 12px; box-shadow: var(--shadow); }
 .row { display: flex; justify-content: space-between; align-items: baseline; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-top: 12px; }
-.label { font-size: 12px; color: var(--sub); }
-.big { font-size: 30px; font-weight: 600; line-height: 1.2; }
+.label { font-size: 12px; color: var(--sub); font-weight: 600; }
+.big { font-size: 34px; font-weight: 700; line-height: 1.2; }
 .unit { font-size: 13px; color: var(--sub); font-weight: 400; }
-.bar { height: 10px; background: var(--bg); border-radius: 5px; margin-top: 8px; overflow: hidden; }
-.bar > div { height: 100%; border-radius: 5px; transition: width .3s; }
-.msg { font-size: 12.5px; margin-top: 6px; }
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-button { font-family: inherit; font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; cursor: pointer; }
-button:active { transform: scale(.97); }
-.drinkbtn { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.drinkbtn b { font-size: 13.5px; font-weight: 600; }
-.drinkbtn span { font-size: 11px; color: var(--sub); }
-.restbtn { width: 100%; margin-top: 10px; padding: 12px; font-size: 14px; color: var(--green); background: var(--green-bg); border: none; border-radius: 10px; font-weight: 600; }
-.restbtn.off { color: var(--sub); background: var(--bg); font-weight: 400; }
-.log { margin-top: 8px; }
-.log .item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.bar { height: 14px; background: var(--bg); border-radius: 7px; margin-top: 10px; overflow: hidden; }
+.bar > div { height: 100%; border-radius: 7px; transition: width .4s; }
+.msg { font-size: 13.5px; margin-top: 8px; font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 10px; }
+button { font-family: inherit; font-size: 13px; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 6px; cursor: pointer; transition: transform .08s; }
+button:active { transform: scale(.93); }
+.drinkbtn { display: flex; flex-direction: column; align-items: center; gap: 1px; border: none; padding: 11px 4px 9px; }
+.drinkbtn .emoji { font-size: 26px; line-height: 1.2; }
+.drinkbtn b { font-size: 13px; font-weight: 700; }
+.drinkbtn span { font-size: 11px; opacity: .75; font-weight: 600; }
+.restbtn { width: 100%; margin-top: 10px; padding: 13px; font-size: 14.5px; color: #fff; background: linear-gradient(120deg, #18ac82, #3cc9a0); border: none; border-radius: 14px; font-weight: 700; }
+.restbtn.off { color: var(--green); background: var(--green-bg); }
+.log { margin-top: 10px; }
+.log .item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-top: 1px dashed var(--line); font-size: 14px; }
 .log .item small { color: var(--muted); margin-right: 8px; }
 .log .item .g { color: var(--sub); font-size: 12.5px; }
 .del { border: none; background: none; color: var(--muted); font-size: 16px; padding: 4px 8px; }
-.chart { display: flex; align-items: flex-end; gap: 7px; height: 110px; margin-top: 12px; }
+.chart { display: flex; align-items: flex-end; gap: 8px; height: 110px; margin-top: 12px; }
 .chart .col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; gap: 3px; }
-.chart .col .v { font-size: 10px; color: var(--muted); }
-.chart .col .b { width: 100%; border-radius: 4px 4px 0 0; background: var(--blue); min-height: 2px; }
-.days { display: flex; gap: 7px; margin-top: 4px; }
-.days div { flex: 1; text-align: center; font-size: 11px; color: var(--muted); }
-.days .today { color: var(--ink); font-weight: 600; }
-.target-line { position: relative; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-.stat { background: var(--bg); border-radius: 10px; padding: 10px 8px; }
+.chart .col .v { font-size: 10.5px; color: var(--muted); font-weight: 600; }
+.chart .col .b { width: 100%; border-radius: 6px 6px 2px 2px; min-height: 2px; }
+.days { display: flex; gap: 8px; margin-top: 5px; }
+.days div { flex: 1; text-align: center; font-size: 11.5px; color: var(--muted); font-weight: 600; }
+.days .sat { color: var(--blue); }
+.days .sun { color: var(--red); }
+.days .today { color: var(--ink); background: var(--amber-bg); border-radius: 6px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 10px; }
+.stat { border-radius: 14px; padding: 11px 9px; }
 .stat .label { font-size: 11px; }
-.stat b { font-size: 17px; font-weight: 600; }
+.stat b { font-size: 18px; font-weight: 700; }
+.stat.s1 { background: var(--green-bg); } .stat.s1 b, .stat.s1 .label { color: var(--green); }
+.stat.s2 { background: var(--amber-bg); } .stat.s2 b, .stat.s2 .label { color: var(--amber); }
+.stat.s3 { background: var(--red-bg); } .stat.s3 b, .stat.s3 .label { color: var(--red); }
 details { margin-top: 14px; }
-summary { font-size: 13px; color: var(--sub); cursor: pointer; padding: 6px 0; }
-input, select { font-family: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; width: 100%; }
+summary { font-size: 13px; color: var(--sub); cursor: pointer; padding: 6px 0; font-weight: 600; }
+input, select { font-family: inherit; font-size: 14px; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 100%; }
 .form-row { display: flex; gap: 6px; margin-top: 8px; }
 .form-row label { flex: 1; font-size: 11px; color: var(--sub); }
 .form-row input { margin-top: 2px; }
-.primary { background: var(--ink); color: var(--card); border: none; font-weight: 600; padding: 11px; width: 100%; margin-top: 10px; border-radius: 10px; }
-.menu-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+.primary { background: linear-gradient(120deg, #f59e0b, #f97350); color: #fff; border: none; font-weight: 700; padding: 12px; width: 100%; margin-top: 10px; border-radius: 12px; font-size: 14px; }
+.menu-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-top: 1px dashed var(--line); font-size: 13.5px; }
 .menu-item span { color: var(--sub); font-size: 12px; }
 .hidden { display: none; }
-.footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 20px; }
+.footer { text-align: center; font-size: 11px; color: var(--muted); margin-top: 22px; }
+.fly { position: fixed; font-size: 26px; pointer-events: none; animation: fly 1.1s ease-out forwards; z-index: 9; }
+@keyframes fly {
+  0% { transform: translateY(0) scale(.6); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(-130px) scale(1.3) rotate(20deg); opacity: 0; }
+}
 </style>
 </head>
 <body>
 
-<div class="row">
-  <h1 id="dateTitle"></h1>
-  <span class="label" id="streak"></span>
+<div class="appbar">
+  <h1>🍺 飲酒管理</h1>
+  <span class="date" id="dateTitle"></span>
 </div>
+<span class="streak hidden" id="streak"></span>
 
 <div class="card">
   <div class="label">今日の純アルコール量</div>
@@ -120,14 +145,14 @@ input, select { font-family: inherit; font-size: 14px; color: var(--ink); backgr
 <div class="card">
   <div class="label" id="monthTitle"></div>
   <div class="stats">
-    <div class="stat"><div class="label">休肝日</div><b id="mRest">0</b><span class="unit">日</span></div>
-    <div class="stat"><div class="label">酒代</div><b id="mCost">¥0</b></div>
-    <div class="stat"><div class="label">1日平均</div><b id="mAvg">0</b><span class="unit">g</span></div>
+    <div class="stat s1"><div class="label">🌿 休肝日</div><b id="mRest">0</b><span class="unit">日</span></div>
+    <div class="stat s2"><div class="label">💰 酒代</div><b id="mCost">¥0</b></div>
+    <div class="stat s3"><div class="label">📊 1日平均</div><b id="mAvg">0</b><span class="unit">g</span></div>
   </div>
 </div>
 
 <details>
-  <summary>設定・メニュー編集</summary>
+  <summary>⚙️ 設定・メニュー編集</summary>
   <div class="card">
     <div class="form-row">
       <label>1日の目標（純アルコールg）<input id="sTarget" type="number" inputmode="numeric"></label>
@@ -156,7 +181,7 @@ input, select { font-family: inherit; font-size: 14px; color: var(--ink); backgr
   </div>
 </details>
 
-<div class="footer">純アルコール量 = 量(ml) × 度数(%) ÷ 100 × 0.8<br>厚労省の目安：1日20g程度・週2日以上の休肝日</div>
+<div class="footer">純アルコール量 = 量(ml) × 度数(%) ÷ 100 × 0.8<br>厚労省の目安：1日20g程度・週2日以上の休肝日 🍶</div>
 
 <script>
 const LS_LOG = 'inshu_log', LS_SET = 'inshu_settings';
@@ -173,6 +198,25 @@ const defaultSettings = {
     { name: '焼酎ロック', ml: 90, abv: 25, price: 150 }
   ]
 };
+
+const btnColors = [
+  { bg: '#fff1bf', fg: '#7a5c00' }, { bg: '#ffe3c2', fg: '#8a4b00' }, { bg: '#ffd9d9', fg: '#9c2f2f' },
+  { bg: '#e9ddff', fg: '#5b3b9e' }, { bg: '#cdf0e2', fg: '#0b6b52' }, { bg: '#d6e9ff', fg: '#1b5fa8' }
+];
+const btnColorsDark = [
+  { bg: '#4d3d09', fg: '#ffe17a' }, { bg: '#4f3210', fg: '#ffc98a' }, { bg: '#4d2323', fg: '#ffb3b3' },
+  { bg: '#3a2b57', fg: '#d4bfff' }, { bg: '#1a4436', fg: '#8ce8c4' }, { bg: '#1e3a57', fg: '#a8cdf5' }
+];
+
+function emojiFor(name) {
+  if (/ビール|生|発泡|エール/.test(name)) return '🍺';
+  if (/ワイン|赤|白/.test(name)) return '🍷';
+  if (/日本酒|冷酒|燗|純米|吟醸/.test(name)) return '🍶';
+  if (/シャンパン|スパークリング/.test(name)) return '🥂';
+  if (/チューハイ|サワー|カクテル|梅酒|レモン/.test(name)) return '🍹';
+  if (/ハイボール|ウイスキー|ウィスキー|焼酎|ブランデー|ジン|ウォッカ/.test(name)) return '🥃';
+  return '🍸';
+}
 
 let settings = load(LS_SET) || defaultSettings;
 let log = load(LS_LOG) || {};
@@ -192,7 +236,19 @@ function pureG(ml, abv) { return Math.round(ml * abv / 100 * 0.8 * 10) / 10; }
 function day(k) { return log[k] || { items: [], rest: false }; }
 function dayG(k) { return Math.round(day(k).items.reduce((s, i) => s + i.g, 0) * 10) / 10; }
 
-function addItem(name, ml, abv, price) {
+function celebrate(emojis, x, y) {
+  emojis.forEach((e, i) => {
+    const s = document.createElement('span');
+    s.className = 'fly'; s.textContent = e;
+    s.style.left = (x - 30 + Math.random() * 60) + 'px';
+    s.style.top = (y - 10 + Math.random() * 20) + 'px';
+    s.style.animationDelay = (i * 0.09) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1600);
+  });
+}
+
+function addItem(name, ml, abv, price, ev) {
   const k = todayKey();
   if (!log[k]) log[k] = { items: [], rest: false };
   log[k].rest = false;
@@ -202,6 +258,7 @@ function addItem(name, ml, abv, price) {
     time: String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0')
   });
   save(); render();
+  if (ev) celebrate([emojiFor(name)], ev.clientX || innerWidth / 2, ev.clientY || 300);
 }
 
 function addCustom() {
@@ -222,12 +279,13 @@ function removeItem(id) {
   save(); render();
 }
 
-function toggleRest() {
+function toggleRest(ev) {
   const k = todayKey();
   if (!log[k]) log[k] = { items: [], rest: false };
   if (log[k].items.length > 0) { alert('今日はすでに記録があります。休肝日にするには記録を削除してください。'); return; }
   log[k].rest = !log[k].rest;
   save(); render();
+  if (log[k].rest && ev) celebrate(['🌿', '✨', '💚'], ev.clientX || innerWidth / 2, ev.clientY || 400);
 }
 
 function saveSettings() {
@@ -280,6 +338,7 @@ function importData(input) {
 }
 
 function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function isDark() { return matchMedia('(prefers-color-scheme: dark)').matches; }
 
 function render() {
   const now = new Date(), k = todayKey();
@@ -293,47 +352,58 @@ function render() {
   const fill = document.getElementById('barFill');
   fill.style.width = pct + '%';
   const msg = document.getElementById('todayMsg');
+  const bigEl = document.getElementById('todayG');
   if (day(k).rest) {
-    fill.style.background = 'var(--green)'; fill.style.width = '100%';
-    msg.textContent = '今日は休肝日です'; msg.style.color = 'var(--green)';
+    fill.style.background = 'linear-gradient(90deg,#18ac82,#3cc9a0)'; fill.style.width = '100%';
+    msg.textContent = '🌿 今日は休肝日です。肝臓が喜んでいます'; msg.style.color = 'var(--green)';
+    bigEl.style.color = 'var(--green)';
   } else if (g === 0) {
     msg.textContent = 'まだ記録がありません'; msg.style.color = 'var(--muted)';
+    bigEl.style.color = 'var(--ink)';
   } else if (g <= target) {
-    fill.style.background = 'var(--green)';
-    msg.textContent = '目標の範囲内です（残り ' + Math.round((target - g) * 10) / 10 + 'g）'; msg.style.color = 'var(--green)';
+    fill.style.background = 'linear-gradient(90deg,#18ac82,#3cc9a0)';
+    msg.textContent = '😊 目標の範囲内です（残り ' + Math.round((target - g) * 10) / 10 + 'g）'; msg.style.color = 'var(--green)';
+    bigEl.style.color = 'var(--green)';
   } else if (g <= target * 2) {
-    fill.style.background = 'var(--amber)';
-    msg.textContent = '目標を ' + Math.round((g - target) * 10) / 10 + 'g 超えています'; msg.style.color = 'var(--amber)';
+    fill.style.background = 'linear-gradient(90deg,#f5a623,#f97316)';
+    msg.textContent = '😅 目標を ' + Math.round((g - target) * 10) / 10 + 'g 超えています'; msg.style.color = 'var(--amber)';
+    bigEl.style.color = 'var(--amber)';
   } else {
-    fill.style.background = 'var(--red)';
-    msg.textContent = '飲みすぎです（目標の' + Math.round(g / target * 10) / 10 + '倍）'; msg.style.color = 'var(--red)';
+    fill.style.background = 'linear-gradient(90deg,#ef4444,#dc2626)';
+    msg.textContent = '🙈 飲みすぎです（目標の' + Math.round(g / target * 10) / 10 + '倍）'; msg.style.color = 'var(--red)';
+    bigEl.style.color = 'var(--red)';
   }
 
   const btns = document.getElementById('drinkBtns');
   btns.innerHTML = '';
+  const pal = isDark() ? btnColorsDark : btnColors;
   settings.drinks.forEach((d, i) => {
+    const c = pal[i % pal.length];
     const b = document.createElement('button');
     b.className = 'drinkbtn';
-    b.innerHTML = '<b>' + esc(d.name) + '</b><span>' + pureG(d.ml, d.abv) + 'g</span>';
-    b.onclick = () => addItem(d.name, d.ml, d.abv, d.price);
+    b.style.background = c.bg; b.style.color = c.fg;
+    b.innerHTML = '<span class="emoji">' + emojiFor(d.name) + '</span><b>' + esc(d.name) + '</b><span>' + pureG(d.ml, d.abv) + 'g</span>';
+    b.onclick = (ev) => addItem(d.name, d.ml, d.abv, d.price, ev);
     btns.appendChild(b);
   });
   const other = document.createElement('button');
   other.className = 'drinkbtn';
-  other.innerHTML = '<b>＋ その他</b><span>手入力</span>';
+  other.style.background = 'var(--bg)'; other.style.color = 'var(--sub)';
+  other.innerHTML = '<span class="emoji">➕</span><b>その他</b><span>手入力</span>';
   other.onclick = () => document.getElementById('customForm').classList.toggle('hidden');
   btns.appendChild(other);
 
   const restBtn = document.getElementById('restBtn');
-  if (day(k).rest) { restBtn.textContent = '✓ 今日は休肝日'; restBtn.className = 'restbtn'; }
+  if (day(k).rest) { restBtn.textContent = '🌿 今日は休肝日！'; restBtn.className = 'restbtn'; }
   else { restBtn.textContent = '今日は飲まない（休肝日にする）'; restBtn.className = 'restbtn off'; }
+  restBtn.onclick = (ev) => toggleRest(ev);
 
   const tl = document.getElementById('todayLog');
   tl.innerHTML = '';
   day(k).items.forEach(i => {
     const div = document.createElement('div');
     div.className = 'item';
-    div.innerHTML = '<span><small>' + i.time + '</small>' + esc(i.name) + ' <span class="g">' + i.g + 'g</span></span>';
+    div.innerHTML = '<span><small>' + i.time + '</small>' + emojiFor(i.name) + ' ' + esc(i.name) + ' <span class="g">' + i.g + 'g</span></span>';
     const del = document.createElement('button');
     del.className = 'del'; del.textContent = '×';
     del.onclick = () => { if (confirm(i.name + ' を削除しますか？')) removeItem(i.id); };
@@ -354,25 +424,27 @@ function render() {
   week.forEach((w, idx) => {
     const col = document.createElement('div'); col.className = 'col';
     if (w.rest) {
-      col.innerHTML = '<div class="v" style="color:var(--green)">休</div><div class="b" style="height:6px;background:var(--green)"></div>';
+      col.innerHTML = '<div class="v">🌿</div><div class="b" style="height:8px;background:var(--green)"></div>';
       weekRest++;
     } else if (w.g === 0) {
       col.innerHTML = '<div class="v">–</div><div class="b" style="height:2px;background:var(--line)"></div>';
     } else {
-      const h = Math.max(4, w.g / maxG * 100);
-      const color = w.g <= target ? 'var(--blue)' : (w.g <= target * 2 ? 'var(--amber)' : 'var(--red)');
+      const h = Math.max(5, w.g / maxG * 100);
+      const color = w.g <= target ? 'linear-gradient(180deg,#3cc9a0,#18ac82)' : (w.g <= target * 2 ? 'linear-gradient(180deg,#f5a623,#f97316)' : 'linear-gradient(180deg,#ef4444,#dc2626)');
       col.innerHTML = '<div class="v">' + w.g + '</div><div class="b" style="height:' + h + '%;background:' + color + '"></div>';
     }
     chart.appendChild(col);
     const dl = document.createElement('div');
     dl.textContent = youbi[w.d.getDay()];
+    if (w.d.getDay() === 0) dl.className = 'sun';
+    if (w.d.getDay() === 6) dl.className = 'sat';
     if (idx === 6) dl.className = 'today';
     daysEl.appendChild(dl);
   });
-  document.getElementById('weekRest').textContent = '休肝日 ' + weekRest + '/' + settings.restTarget + '日';
+  document.getElementById('weekRest').textContent = '🌿 休肝日 ' + weekRest + '/' + settings.restTarget + '日';
 
   const y = now.getFullYear(), m = now.getMonth();
-  document.getElementById('monthTitle').textContent = (m + 1) + '月のまとめ';
+  document.getElementById('monthTitle').textContent = '📅 ' + (m + 1) + '月のまとめ';
   let mRest = 0, mCost = 0, mG = 0, mDays = 0;
   Object.keys(log).forEach(kk => {
     const p = kk.split('-');
@@ -396,7 +468,9 @@ function render() {
       streak++;
     } else break;
   }
-  document.getElementById('streak').textContent = streak >= 2 ? '目標達成 ' + streak + '日連続' : '';
+  const st = document.getElementById('streak');
+  if (streak >= 2) { st.textContent = '🔥 目標達成 ' + streak + '日連続！'; st.classList.remove('hidden'); }
+  else st.classList.add('hidden');
 
   document.getElementById('sTarget').value = settings.targetG;
   document.getElementById('sRest').value = settings.restTarget;
@@ -405,7 +479,7 @@ function render() {
   settings.drinks.forEach((d, i) => {
     const div = document.createElement('div');
     div.className = 'menu-item';
-    div.innerHTML = '<span style="color:var(--ink)">' + esc(d.name) + '</span><span>' + d.ml + 'ml・' + d.abv + '%・¥' + d.price + '（' + pureG(d.ml, d.abv) + 'g）</span>';
+    div.innerHTML = '<span style="color:var(--ink)">' + emojiFor(d.name) + ' ' + esc(d.name) + '</span><span>' + d.ml + 'ml・' + d.abv + '%・¥' + d.price + '（' + pureG(d.ml, d.abv) + 'g）</span>';
     const del = document.createElement('button');
     del.className = 'del'; del.textContent = '×';
     del.onclick = () => { if (confirm(d.name + ' をメニューから削除しますか？')) removeMenu(i); };
@@ -413,8 +487,7 @@ function render() {
     ml.appendChild(div);
   });
 
-  document.querySelector('meta[name=theme-color]').content =
-    matchMedia('(prefers-color-scheme: dark)').matches ? '#191917' : '#f7f6f2';
+  document.querySelector('meta[name=theme-color]').content = isDark() ? '#231c12' : '#f59e0b';
 }
 
 render();
